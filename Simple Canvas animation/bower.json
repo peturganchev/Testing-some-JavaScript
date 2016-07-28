@@ -1,0 +1,24 @@
+{
+  "name": "testing",
+  "authors": [
+    "Me"
+  ],
+  "description": "I am testing some stuff",
+  "main": "index.html",
+  "keywords": [
+    "none"
+  ],
+  "license": "no license",
+  "homepage": "index.html",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "KineticJS": "kineticjs#^5.1.0"
+  }
+}
