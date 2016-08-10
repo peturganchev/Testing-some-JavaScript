@@ -1,7 +1,7 @@
 var deltax = 8,
     deltay = -5,
     directionX = 1,
-    directionY = -1,
+    directionY = 1,
     jumpHeight = 100,
     positionY,
     CanJump = true,
@@ -67,35 +67,53 @@ function move() {
     Gravitation();
 }
 
+var falling = false;
 /* Jumping */
-function jumpSkoklio(finishedCallback) {
-    if (positionY - jumpHeight > skoklio.getY()) {
-        deltay *= -1;
-    }
-    skoklio.setY(skoklio.getY() + (deltay));
-    skoklio.setX(skoklio.getX() + (deltax * directionX) / 2);
-    layer.draw();
-    if (positionY > skoklio.getY()) {
-        CanJump = false;
-        requestAnimationFrame(jumpSkoklio);
+function jumpSkoklio() {
+    if (directionY != 0) {
+        if (positionY - jumpHeight > skoklio.getY()) {
+            directionY *= -1;
+            falling = true;
+        }
+        skoklio.setY(skoklio.getY() + (deltay * directionY));
+        skoklio.setX(skoklio.getX() + (deltax * directionX) / 2);
+        layer.draw();
+        if (positionY > skoklio.getY()) {
+            CanJump = false;
+            requestAnimationFrame(jumpSkoklio);
+            if (falling) {
+                floorslayer.find('Rect').forEach(function(floor) {
+                    if (collides(skoklio, floor) == 'bot') {
+                        console.log('new floor');
+                        directionY = 0;
+                        falling = false;
+                    }
+                });
+            }
+            //  falling = false;
+        } else {
+            CanJump = true;
+            //  deltay *= -1;
+            positionY = skoklio.getY();
+            Gravitation();
+            falling = false;
+        }
+      //  console.log('falling = ' + falling);
     } else {
         CanJump = true;
-        deltay *= -1;
-        positionY = skoklio.getY();
-        //  ColisionDetect();
-        Gravitation();
     }
 }
 
 /* Controls */
 window.onkeydown = function(ev) {
-    if (ev.keyCode === 68&CanJump) {
+    if (ev.keyCode === 68 & CanJump) {
         directionX = 1;
         move();
     } else if (ev.keyCode === 87 & CanJump) {
         positionY = skoklio.getY();
+        directionY = 1;
         jumpSkoklio();
-    } else if (ev.keyCode === 65&CanJump) {
+    } else if (ev.keyCode === 65 & CanJump) {
         directionX = -1;
         move();
     }
@@ -141,20 +159,26 @@ function Gravitation() {
     floorslayer.find('Rect').forEach(function(floor) {
         if (collides(skoklio, floor) == 'bot') {
             onGround = true;
-            console.log(onGround);
+            //  console.log(onGround);
+            CanJump = true;
         }
     });
     if (!onGround) {
-        console.log(onGround);
+        //  console.log(onGround);
         skoklio.setY(skoklio.getY() + gravity);
         layer.draw();
         requestAnimationFrame(Gravitation);
+        CanJump = false;
     }
 }
 Gravitation();
 
+function checkForNewFloor(arguments) {
+
+}
+
 function reset() {
-    if (skoklio.getY() > 1000) {
+    if (skoklio.getY() > 800) {
         skoklio.setY(10);
         skoklio.setX(10);
     }
